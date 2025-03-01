@@ -1,4 +1,5 @@
 ###
 
 1. Clone Repo
-2. Run "npm i" in the react-app & server dir
+
+2) Run "./start.sh" or "bash start.sh"

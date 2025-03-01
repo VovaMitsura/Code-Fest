@@ -1,7 +1,7 @@
 import "./App.css";
 import SignIn from "./components/auth/SignIn";
 import SignUp from "./components/auth/SignUp";
-import Home from "./components/Home";
+import Home from "./views/Home/home";
 import { Routes, Route } from "react-router";
 
 export default function App() {

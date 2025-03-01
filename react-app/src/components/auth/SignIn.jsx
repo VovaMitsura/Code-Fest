@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router";
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ function SignIn() {
   const [loading, setLoading] = useState(false);
 
   const { signin } = useAuth();
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -16,6 +18,7 @@ function SignIn() {
       setError("");
       setLoading(true);
       await signin(email, password);
+      navigate("/home");
     } catch (err) {
       setError("Failed to sign in: " + err.message);
     } finally {

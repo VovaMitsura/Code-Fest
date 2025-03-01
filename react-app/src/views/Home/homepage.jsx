@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import './home.css';
+import './homepage.css';
 // Remove the problematic import
 // import TrueTideLogo from './TrueTideLogo.png';
 

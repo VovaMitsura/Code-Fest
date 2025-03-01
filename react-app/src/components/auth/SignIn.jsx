@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router"; // Import useNavigate
 
 function SignIn() {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ function SignIn() {
   const [loading, setLoading] = useState(false);
 
   const { signin } = useAuth();
+  const navigate = useNavigate(); // Initialize useNavigate hook
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -16,6 +18,8 @@ function SignIn() {
       setError("");
       setLoading(true);
       await signin(email, password);
+      // Redirect to home page after successful sign-in
+      navigate("/home"); // Navigate to the home route instead of root
     } catch (err) {
       setError("Failed to sign in: " + err.message);
     } finally {

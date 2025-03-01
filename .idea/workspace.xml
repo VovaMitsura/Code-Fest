@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="43cb06cf-b5ad-43d2-b113-de41c7835528" name="Changes" comment="Chore:update gitignore">
-      <change beforePath="$PROJECT_DIR$/react-app/src/App.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/react-app/src/App.jsx" afterDir="false" />
+    <list default="true" id="43cb06cf-b5ad-43d2-b113-de41c7835528" name="Changes" comment="Chore: productivity manager">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react-app/.env" beforeDir="false" afterPath="$PROJECT_DIR$/react-app/.env" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/react-app/src/components/Home.css" beforeDir="false" afterPath="$PROJECT_DIR$/react-app/src/components/Home.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/.env" beforeDir="false" afterPath="$PROJECT_DIR$/server/.env" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -19,6 +22,9 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
@@ -43,12 +49,29 @@
       <option name="project" value="LOCAL" />
       <updated>1740863829949</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Chore: productivity manager">
+      <option name="closed" value="true" />
+      <created>1740864239728</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1740864239728</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Chore: productivity manager">
+      <option name="closed" value="true" />
+      <created>1740864260823</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1740864260823</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Chore:" />
     <MESSAGE value="Chore:update gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="Chore:update gitignore" />
+    <MESSAGE value="Chore: productivity manager" />
+    <option name="LAST_COMMIT_MESSAGE" value="Chore: productivity manager" />
   </component>
 </project>

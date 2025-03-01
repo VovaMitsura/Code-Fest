@@ -18,7 +18,7 @@ function SignIn() {
       setError("");
       setLoading(true);
       await signin(email, password);
-      navigate("/home");
+      navigate("/homepage");
     } catch (err) {
       setError("Failed to sign in: " + err.message);
     } finally {

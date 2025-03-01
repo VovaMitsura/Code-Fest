@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import './homepage.css';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import "./homepage.css";
 // Remove the problematic import
 // import TrueTideLogo from './TrueTideLogo.png';
 
-const Home = () => {
+export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       const isScrolled = window.scrollY > 50;
@@ -14,21 +14,23 @@ const Home = () => {
         setScrolled(isScrolled);
       }
     };
-    
-    document.addEventListener('scroll', handleScroll, { passive: true });
-    
+
+    document.addEventListener("scroll", handleScroll, { passive: true });
+
     // Clean up the event listener
     return () => {
-      document.removeEventListener('scroll', handleScroll);
+      document.removeEventListener("scroll", handleScroll);
     };
   }, [scrolled]);
 
   return (
     <>
-      <nav className={`navbar ${scrolled ? 'navbar-scrolled' : ''}`}>
+      <nav className={`navbar ${scrolled ? "navbar-scrolled" : ""}`}>
         <div className="logo">
           {/* Use text logo instead of image */}
-          <span className={`logo-text ${scrolled ? 'logo-text-scrolled' : ''}`}>TrueTide</span>
+          <span className={`logo-text ${scrolled ? "logo-text-scrolled" : ""}`}>
+            TrueTide
+          </span>
         </div>
         <div className="nav-links">
           <a href="#about">About</a>
@@ -36,7 +38,9 @@ const Home = () => {
           <a href="#pricing">Pricing</a>
           <a href="#demo">Demo</a>
           <div className="nav-buttons">
-            <Link to="/signin" className="nav-btn login-btn">Login</Link>
+            <Link to="/signin" className="nav-btn login-btn">
+              Login
+            </Link>
           </div>
         </div>
       </nav>
@@ -46,20 +50,33 @@ const Home = () => {
           <div className="bg-shape-top"></div>
           <div className="bg-shape-bottom"></div>
         </div>
-        
+
         <section className="hero-section">
           <div className="hero-content">
             <h1>Stay Accountable, Achieve More</h1>
-            <p>The best tool for product and marketing teams to accelerate growth today with us.</p>
+            <p>
+              The best tool for product and marketing teams to accelerate growth
+              today with us.
+            </p>
             <div className="hero-buttons">
-              <Link to="/signup" className="primary-btn">Start for Free</Link>
+              <Link to="/signup" className="primary-btn">
+                Start for Free
+              </Link>
             </div>
           </div>
-          
+
           <div className="hero-image-container">
             <div className="dashboard-images">
-              <img src="/Mainsoftware.png" alt="Dashboard Preview" className="dashboard-preview left-image" />
-              <img src="/longersoftware.png" alt="Analytics Dashboard" className="dashboard-preview right-image" />
+              <img
+                src="/Mainsoftware.png"
+                alt="Dashboard Preview"
+                className="dashboard-preview left-image"
+              />
+              <img
+                src="/longersoftware.png"
+                alt="Analytics Dashboard"
+                className="dashboard-preview right-image"
+              />
             </div>
             <div className="floating-ui-element ui-element-1"></div>
             <div className="floating-ui-element ui-element-2"></div>
@@ -75,8 +92,17 @@ const Home = () => {
             <h2 className="section-title">About TrueTide</h2>
             <div className="section-content">
               <div className="about-text">
-                <p>TrueTide is a powerful platform designed to help individuals and teams stay accountable and achieve their goals. Our mission is to provide the tools and support needed to turn ambitions into accomplishments.</p>
-                <p>Founded in 2023, we've already helped thousands of users track their progress, build better habits, and reach their full potential through our innovative accountability features.</p>
+                <p>
+                  TrueTide is a powerful platform designed to help individuals
+                  and teams stay accountable and achieve their goals. Our
+                  mission is to provide the tools and support needed to turn
+                  ambitions into accomplishments.
+                </p>
+                <p>
+                  Founded in 2023, we've already helped thousands of users track
+                  their progress, build better habits, and reach their full
+                  potential through our innovative accountability features.
+                </p>
               </div>
               <div className="about-image">
                 <div className="image-placeholder"></div>
@@ -93,22 +119,34 @@ const Home = () => {
               <div className="feature-card">
                 <div className="feature-icon">📊</div>
                 <h3>Progress Tracking</h3>
-                <p>Visualize your journey with intuitive charts and metrics that show your improvement over time.</p>
+                <p>
+                  Visualize your journey with intuitive charts and metrics that
+                  show your improvement over time.
+                </p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">👥</div>
                 <h3>Accountability Partners</h3>
-                <p>Connect with friends, colleagues, or mentors who can help keep you on track toward your goals.</p>
+                <p>
+                  Connect with friends, colleagues, or mentors who can help keep
+                  you on track toward your goals.
+                </p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">🔔</div>
                 <h3>Smart Reminders</h3>
-                <p>Never miss an important task with customizable notifications that adapt to your schedule.</p>
+                <p>
+                  Never miss an important task with customizable notifications
+                  that adapt to your schedule.
+                </p>
               </div>
               <div className="feature-card">
                 <div className="feature-icon">📱</div>
                 <h3>Cross-Platform</h3>
-                <p>Access your dashboard from any device with our web, iOS, and Android applications.</p>
+                <p>
+                  Access your dashboard from any device with our web, iOS, and
+                  Android applications.
+                </p>
               </div>
             </div>
           </div>
@@ -122,7 +160,9 @@ const Home = () => {
               <div className="pricing-card">
                 <div className="pricing-header">
                   <h3>Free</h3>
-                  <div className="price">$0<span>/month</span></div>
+                  <div className="price">
+                    $0<span>/month</span>
+                  </div>
                 </div>
                 <ul className="pricing-features">
                   <li>Basic goal tracking</li>
@@ -130,12 +170,16 @@ const Home = () => {
                   <li>Weekly progress reports</li>
                   <li>Community support</li>
                 </ul>
-                <Link to="/signup" className="pricing-btn">Get Started</Link>
+                <Link to="/signup" className="pricing-btn">
+                  Get Started
+                </Link>
               </div>
               <div className="pricing-card featured">
                 <div className="pricing-header">
                   <h3>Pro</h3>
-                  <div className="price">$9.99<span>/month</span></div>
+                  <div className="price">
+                    $9.99<span>/month</span>
+                  </div>
                 </div>
                 <ul className="pricing-features">
                   <li>Unlimited goal tracking</li>
@@ -144,12 +188,16 @@ const Home = () => {
                   <li>Priority support</li>
                   <li>Custom reminders</li>
                 </ul>
-                <Link to="/signup" className="pricing-btn primary">Choose Plan</Link>
+                <Link to="/signup" className="pricing-btn primary">
+                  Choose Plan
+                </Link>
               </div>
               <div className="pricing-card">
                 <div className="pricing-header">
                   <h3>Team</h3>
-                  <div className="price">$29.99<span>/month</span></div>
+                  <div className="price">
+                    $29.99<span>/month</span>
+                  </div>
                 </div>
                 <ul className="pricing-features">
                   <li>Everything in Pro</li>
@@ -158,7 +206,9 @@ const Home = () => {
                   <li>Goal collaboration</li>
                   <li>Admin controls</li>
                 </ul>
-                <Link to="/signup" className="pricing-btn">Contact Sales</Link>
+                <Link to="/signup" className="pricing-btn">
+                  Contact Sales
+                </Link>
               </div>
             </div>
           </div>
@@ -176,8 +226,13 @@ const Home = () => {
               </div>
               <div className="demo-text">
                 <h3>Watch how TrueTide works</h3>
-                <p>Our quick demo shows you how to set up goals, connect with accountability partners, and track your progress effectively.</p>
-                <Link to="/signup" className="primary-btn">Try It Yourself</Link>
+                <p>
+                  Our quick demo shows you how to set up goals, connect with
+                  accountability partners, and track your progress effectively.
+                </p>
+                <Link to="/signup" className="primary-btn">
+                  Try It Yourself
+                </Link>
               </div>
             </div>
           </div>
@@ -217,6 +272,4 @@ const Home = () => {
       </div>
     </>
   );
-};
-
-export default Home;
+}

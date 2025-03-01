@@ -2,6 +2,7 @@ import "./App.css";
 import SignIn from "./components/auth/SignIn";
 import SignUp from "./components/auth/SignUp";
 import Home from "./components/Home";
+import Productivity from "./components/Productivity";
 import { Routes, Route } from "react-router";
 
 export default function App() {
@@ -10,6 +11,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/signup" element={<SignUp />} />
+        <Route path="/productivity" element={<Productivity />} />
         <Route path="/signin" element={<SignIn />} />
       </Routes>
     </>

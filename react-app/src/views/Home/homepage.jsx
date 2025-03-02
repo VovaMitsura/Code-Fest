@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./homepage.css";
+import mainsoftware from "../../public/images/Mainsoftware.png";
+import longersoftware from "../../public/images/longersoftware.png";
 export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
 
@@ -65,12 +67,12 @@ export default function HomePage() {
           <div className="hero-image-container">
             <div className="dashboard-images">
               <img
-                src="/images/Mainsoftware.png"
+                src={mainsoftware}
                 alt="Dashboard Preview"
                 className="left-image"
               />
               <img
-                src="/images/longersoftware.png"
+                src={longersoftware}
                 alt="Analytics Dashboard"
                 className="right-image"
               />

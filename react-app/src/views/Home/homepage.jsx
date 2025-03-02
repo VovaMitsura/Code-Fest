@@ -77,7 +77,7 @@ export default function HomePage() {
             </div>
             <div className="floating-ui-element ui-element-1"></div>
             <div className="floating-ui-element ui-element-2"></div>
-            <div className="floating-ui-element ui-elemen-3"></div>
+            <div className="floating-ui-element ui-element-3"></div>
           </div>
         </section>
       </div>

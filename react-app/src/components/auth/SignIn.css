@@ -1,0 +1,444 @@
+.auth-page-wrapper {
+    min-height: 100vh;
+    width: 100vw;
+    background-color: #f7f9fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
+  
+  
+  /* Enhanced Background Animation Elements */
+  .animated-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+  }
+  
+  
+  .animated-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: linear-gradient(45deg, rgba(5, 95, 252, 0.15), rgba(5, 95, 252, 0.08));
+    animation: float 12s infinite ease-in-out;
+    box-shadow: 0 0 60px rgba(5, 95, 252, 0.1);
+  }
+  
+  
+  .shape-1 {
+    width: 500px;
+    height: 500px;
+    top: -150px;
+    left: -100px;
+    animation-delay: 0s;
+  }
+  
+  
+  .shape-2 {
+    width: 400px;
+    height: 400px;
+    bottom: -100px;
+    right: -50px;
+    animation-delay: 2s;
+    background: linear-gradient(45deg, rgba(5, 95, 252, 0.12), rgba(25, 118, 210, 0.06));
+  }
+  
+  
+  .shape-3 {
+    width: 250px;
+    height: 250px;
+    bottom: 30%;
+    left: 10%;
+    animation-delay: 1s;
+    background: linear-gradient(45deg, rgba(5, 95, 252, 0.1), rgba(0, 150, 255, 0.08));
+  }
+  
+  
+  .shape-4 {
+    width: 200px;
+    height: 200px;
+    top: 20%;
+    right: 10%;
+    animation-delay: 3s;
+    background: linear-gradient(45deg, rgba(0, 120, 255, 0.1), rgba(5, 95, 252, 0.05));
+  }
+  
+  
+  @keyframes float {
+    0% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    25% {
+      transform: translate(15px, 15px) rotate(5deg) scale(1.02);
+    }
+    50% {
+      transform: translate(0, 30px) rotate(0deg) scale(1);
+    }
+    75% {
+      transform: translate(-15px, 15px) rotate(-5deg) scale(0.98);
+    }
+    100% {
+      transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+  }
+  
+  
+  /* Particles with random directions */
+  .particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  
+  
+  .particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(5, 95, 252, 0.5);
+    box-shadow: 0 0 10px rgba(5, 95, 252, 0.6);
+    opacity: 0.8;
+  }
+  
+  
+  /* Create multiple animation patterns */
+  @keyframes float-up-right {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0.8;
+    }
+    5% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translate(150px, -300px);
+      opacity: 0;
+    }
+  }
+  
+  
+  @keyframes float-up-left {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0.8;
+    }
+    5% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translate(-150px, -300px);
+      opacity: 0;
+    }
+  }
+  
+  
+  @keyframes float-diagonal-right {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0.8;
+    }
+    5% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translate(200px, -200px);
+      opacity: 0;
+    }
+  }
+  
+  
+  @keyframes float-diagonal-left {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0.8;
+    }
+    5% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 0.8;
+    }
+    100% {
+      transform: translate(-200px, -200px);
+      opacity: 0;
+    }
+  }
+  
+  
+  @keyframes float-zigzag {
+    0% {
+      transform: translate(0, 0);
+      opacity: 0.8;
+    }
+    25% {
+      transform: translate(50px, -100px);
+    }
+    50% {
+      transform: translate(-50px, -200px);
+    }
+    75% {
+      transform: translate(25px, -300px);
+    }
+    100% {
+      transform: translate(-25px, -350px);
+      opacity: 0;
+    }
+  }
+  
+  
+  /* Assign different animations to particles */
+  .particle:nth-child(1) { bottom: 5%; left: 10%; animation: float-up-right 12s infinite linear; width: 12px; height: 12px; }
+  .particle:nth-child(2) { bottom: 15%; left: 20%; animation: float-up-left 10s infinite linear; width: 8px; height: 8px; }
+  .particle:nth-child(3) { bottom: 25%; left: 80%; animation: float-diagonal-right 14s infinite linear; width: 14px; height: 14px; }
+  .particle:nth-child(4) { bottom: 10%; left: 40%; animation: float-diagonal-left 11s infinite linear; width: 9px; height: 9px; }
+  .particle:nth-child(5) { bottom: 30%; left: 50%; animation: float-zigzag 16s infinite linear; width: 11px; height: 11px; }
+  .particle:nth-child(6) { bottom: 40%; left: 25%; animation: float-up-right 9s infinite linear; width: 7px; height: 7px; }
+  .particle:nth-child(7) { bottom: 20%; left: 70%; animation: float-up-left 13s infinite linear; width: 13px; height: 13px; }
+  .particle:nth-child(8) { bottom: 50%; left: 30%; animation: float-diagonal-right 12s infinite linear; width: 10px; height: 10px; }
+  .particle:nth-child(9) { bottom: 35%; left: 85%; animation: float-diagonal-left 15s infinite linear; width: 12px; height: 12px; }
+  .particle:nth-child(10) { bottom: 45%; left: 15%; animation: float-zigzag 14s infinite linear; width: 8px; height: 8px; }
+  .particle:nth-child(11) { bottom: 55%; left: 60%; animation: float-up-right 11s infinite linear; width: 10px; height: 10px; }
+  .particle:nth-child(12) { bottom: 65%; left: 35%; animation: float-up-left 13s infinite linear; width: 9px; height: 9px; }
+  .particle:nth-child(13) { bottom: 75%; left: 75%; animation: float-diagonal-right 10s infinite linear; width: 11px; height: 11px; }
+  .particle:nth-child(14) { bottom: 60%; left: 45%; animation: float-diagonal-left 12s infinite linear; width: 13px; height: 13px; }
+  .particle:nth-child(15) { bottom: 70%; left: 90%; animation: float-zigzag 15s infinite linear; width: 8px; height: 8px; }
+  .particle:nth-child(16) { bottom: 80%; left: 5%; animation: float-up-right 14s infinite linear; width: 12px; height: 12px; }
+  .particle:nth-child(17) { bottom: 85%; left: 55%; animation: float-up-left 10s infinite linear; width: 10px; height: 10px; }
+  .particle:nth-child(18) { bottom: 15%; left: 65%; animation: float-diagonal-right 13s infinite linear; width: 9px; height: 9px; }
+  .particle:nth-child(19) { bottom: 25%; left: 95%; animation: float-diagonal-left 11s infinite linear; width: 11px; height: 11px; }
+  .particle:nth-child(20) { bottom: 90%; left: 25%; animation: float-zigzag 16s infinite linear; width: 7px; height: 7px; }
+  .particle:nth-child(21) { bottom: 8%; left: 88%; animation: float-up-right 12s infinite linear; width: 13px; height: 13px; }
+  .particle:nth-child(22) { bottom: 18%; left: 33%; animation: float-up-left 14s infinite linear; width: 9px; height: 9px; }
+  .particle:nth-child(23) { bottom: 28%; left: 78%; animation: float-diagonal-right 11s infinite linear; width: 11px; height: 11px; }
+  .particle:nth-child(24) { bottom: 38%; left: 12%; animation: float-diagonal-left 13s infinite linear; width: 10px; height: 10px; }
+  .particle:nth-child(25) { bottom: 48%; left: 92%; animation: float-zigzag 15s infinite linear; width: 12px; height: 12px; }
+  .particle:nth-child(26) { bottom: 58%; left: 22%; animation: float-up-right 10s infinite linear; width: 8px; height: 8px; }
+  .particle:nth-child(27) { bottom: 68%; left: 82%; animation: float-up-left 12s infinite linear; width: 14px; height: 14px; }
+  .particle:nth-child(28) { bottom: 78%; left: 42%; animation: float-diagonal-right 14s infinite linear; width: 10px; height: 10px; }
+  .particle:nth-child(29) { bottom: 88%; left: 72%; animation: float-diagonal-left 11s infinite linear; width: 12px; height: 12px; }
+  .particle:nth-child(30) { bottom: 95%; left: 8%; animation: float-zigzag 13s infinite linear; width: 9px; height: 9px; }
+  
+  
+  .auth-container {
+    max-width: 480px;
+    width: 90%;
+    padding: 50px;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    background: white;
+    position: relative;
+    z-index: 10;
+    animation: container-appear 0.8s ease-out forwards, pulse 6s infinite ease-in-out;
+  }
+  
+  
+  @keyframes container-appear {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+      box-shadow: 0 15px 50px rgba(5, 95, 252, 0.2);
+    }
+    100% {
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  
+  .auth-logo {
+    text-align: center;
+    margin-bottom: 35px;
+  }
+  
+  
+  .auth-logo .logo-text {
+    font-size: 32px;
+    font-weight: 700;
+    color: #055ffc;
+  }
+  
+  
+  .auth-container h2 {
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 26px;
+    text-align: center;
+    font-weight: 600;
+  }
+  
+  
+  .form-group {
+    margin-bottom: 24px;
+  }
+  
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #4a5568;
+    font-size: 14px;
+  }
+  
+  
+  .form-group input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    background-color: #f8fafc;
+  }
+  
+  
+  .form-group input:focus {
+    border-color: #055ffc;
+    box-shadow: 0 0 0 3px rgba(5, 95, 252, 0.15);
+    outline: none;
+    background-color: #fff;
+  }
+  
+  
+  .auth-container button {
+    width: 100%;
+    padding: 14px;
+    background-color: #055ffc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 15px;
+  }
+  
+  
+  .auth-container button:hover {
+    background-color: #0046c7;
+    box-shadow: 0 4px 12px rgba(5, 95, 252, 0.2);
+  }
+  
+  
+  .auth-container button:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  
+  .error-message {
+    background-color: #fff5f5;
+    color: #e53e3e;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 3px solid #e53e3e;
+  }
+  
+  
+  .success-message {
+    background-color: #f0fff4;
+    color: #38a169;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 3px solid #38a169;
+  }
+  
+  
+  .auth-links {
+    margin-top: 24px;
+    text-align: center;
+    font-size: 14px;
+    color: #4a5568;
+  }
+  
+  
+  .auth-links a {
+    color: #055ffc;
+    text-decoration: none;
+    font-weight: 500;
+    margin-left: 5px;
+  }
+  
+  
+  .auth-links a:hover {
+    text-decoration: underline;
+  }
+  
+  
+  /* Back to Home Button */
+  .back-to-home {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #055ffc;
+    text-decoration: none;
+    font-weight: 500;
+    background-color: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+    z-index: 100;
+  }
+  
+  .back-to-home:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .back-to-home svg {
+    transition: transform 0.2s ease;
+  }
+  
+  .back-to-home:hover svg {
+    transform: translateX(-3px);
+  }
+  
+  
+  
+  

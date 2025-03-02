@@ -65,14 +65,14 @@ export default function HomePage() {
           <div className="hero-image-container">
             <div className="dashboard-images">
               <img
-                src="/Mainsoftware.png"
+                src="/images/Mainsoftware.png"
                 alt="Dashboard Preview"
-                className="dashboard-preview left-image"
+                className="left-image"
               />
               <img
-                src="/longersoftware.png"
+                src="/images/longersoftware.png"
                 alt="Analytics Dashboard"
-                className="dashboard-preview right-image"
+                className="right-image"
               />
             </div>
             <div className="floating-ui-element ui-element-1"></div>

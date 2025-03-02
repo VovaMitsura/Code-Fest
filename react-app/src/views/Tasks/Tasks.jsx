@@ -26,8 +26,11 @@ const Tasks = () => {
                     throw new Error(data.error || "Failed to fetch tasks");
                 }
 
-                console.log("Fetched tasks:", data.tasks);
-                const todayTasks = data.tasks;
+                const today = new Date().toISOString().split("T")[0];
+
+                const todayTasks = data.tasks.filter(task => {
+                    return task.date.startsWith(today);
+                });
 
                 setTask(todayTasks);
             } catch (error) {

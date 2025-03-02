@@ -2,53 +2,73 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import "./Tasks.css";
+import {AuthProvider, useAuth} from "../../contexts/AuthContext.jsx";
 
 const Tasks = () => {
+    const {user} = useAuth()
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const [currentDate, setCurrentDate] = useState('');
-    const [currentTime, setCurrentTime] = useState('');
-    const [tasks, setTasks] = useState([
-        { id: 1, text: "Complete project proposal", completed: false },
-        { id: 2, text: "Review team's progress", completed: false },
-        { id: 3, text: "Schedule client meeting", completed: true },
-        { id: 4, text: "Update documentation", completed: false }
-    ]);
+    const [task, setTask] = useState('');
     const [newTask, setNewTask] = useState('');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const date = new Date().toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-        });
-        setCurrentDate(date);
-    }, []);
+
+    const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
     useEffect(() => {
-        const time = new Date().toLocaleTimeString('en-US', {
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric',
-        });
-        setCurrentTime(time);
+        if (!user?.email) return; // Ensure email exists
+
+        const fetchTasks = async () => {
+            try {
+                const response = await fetch(`${API_URL}/api/tasks?user_id=${user.id}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Failed to fetch tasks");
+                }
+
+                const todayTasks = data.tasks;
+
+                setTasks(todayTasks);
+            } catch (error) {
+                console.error("Error fetching tasks:", error);
+            }
+        };
+
+        fetchTasks();
     }, []);
 
     const toggleSidebar = () => {
         setSidebarCollapsed(!sidebarCollapsed);
     };
 
-    const addTask = () => {
-        if (newTask.trim()) {
-            setTasks([...tasks, { id: Date.now(), text: newTask, completed: false }]);
-            setNewTask('');
-        }
-    };
+    const addTask = async (taskText) => {
+        if (!taskText.trim() || !user?.email) return; // Ensure email exists
 
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            addTask();
+        try {
+            console.log("Sending task to server...");
+            const response = await fetch(`${API_URL}/api/tasks`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    id: user.id,
+                    email: user.email, // Send user email
+                    body: taskText,
+                    is_reminder: false,
+                    remind_date: null,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                setTasks([...tasks, data.task]); // Update state with new task
+            } else {
+                console.error("Error adding task:", data.error);
+            }
+        } catch (error) {
+            console.error("Network error:", error);
         }
     };
 
@@ -57,7 +77,7 @@ const Tasks = () => {
     };
 
     const toggleTaskCompletion = (taskId) => {
-        setTasks(tasks.map(task => 
+        setTasks(tasks.map(task =>
             task.id === taskId ? { ...task, completed: !task.completed } : task
         ));
     };
@@ -72,11 +92,11 @@ const Tasks = () => {
 
     return (
         <div className="dashboard-container">
-            <Sidebar 
-                sidebarCollapsed={sidebarCollapsed} 
-                toggleSidebar={toggleSidebar} 
+            <Sidebar
+                sidebarCollapsed={sidebarCollapsed}
+                toggleSidebar={toggleSidebar}
             />
-            
+
             <main className="main-content">
                 <div className="dashboard-content">
                     <div className="welcome-banner">
@@ -86,17 +106,17 @@ const Tasks = () => {
                             <p className="time-display">{currentTime}</p>
                         </div>
                     </div>
-                    
+
                     <div className="tasks-section">
                         <div className="task-input-container">
                             <div className="task-input-wrapper">
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={newTask}
                                     onChange={(e) => setNewTask(e.target.value)}
                                     onKeyPress={handleKeyPress}
-                                    placeholder="Add a new task..." 
-                                    className="task-input" 
+                                    placeholder="Add a new task..."
+                                    className="task-input"
                                 />
                                 <button onClick={addTask} className="add-task-btn">
                                     Add Task
@@ -150,4 +170,4 @@ const Tasks = () => {
     );
 };
 
-export default Tasks; 
+export default Tasks;

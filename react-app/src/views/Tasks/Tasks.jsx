@@ -7,7 +7,7 @@ import {AuthProvider, useAuth} from "../../contexts/AuthContext.jsx";
 const Tasks = () => {
     const {user} = useAuth()
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const [task, setTask] = useState('');
+    const [task, setTask] = useState([]);
     const [newTask, setNewTask] = useState('');
     const navigate = useNavigate();
 
@@ -26,9 +26,10 @@ const Tasks = () => {
                     throw new Error(data.error || "Failed to fetch tasks");
                 }
 
+                console.log("Fetched tasks:", data.tasks);
                 const todayTasks = data.tasks;
 
-                setTasks(todayTasks);
+                setTask(todayTasks);
             } catch (error) {
                 console.error("Error fetching tasks:", error);
             }
@@ -41,7 +42,14 @@ const Tasks = () => {
         setSidebarCollapsed(!sidebarCollapsed);
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            addTask();
+        }
+    };
+
     const addTask = async (taskText) => {
+
         if (!taskText.trim() || !user?.email) return; // Ensure email exists
 
         try {
@@ -63,7 +71,7 @@ const Tasks = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setTasks([...tasks, data.task]); // Update state with new task
+                setTask([...task, data.task]); // Update state with new task
             } else {
                 console.error("Error adding task:", data.error);
             }
@@ -73,11 +81,11 @@ const Tasks = () => {
     };
 
     const deleteTask = (taskId) => {
-        setTasks(tasks.filter(task => task.id !== taskId));
+        setTask(task.filter(task => task.id !== taskId));
     };
 
     const toggleTaskCompletion = (taskId) => {
-        setTasks(tasks.map(task =>
+        setTask(task.map(task =>
             task.id === taskId ? { ...task, completed: !task.completed } : task
         ));
     };
@@ -102,8 +110,6 @@ const Tasks = () => {
                     <div className="welcome-banner">
                         <div className="welcome-content">
                             <h1>Tasks</h1>
-                            <p className="date-display">{currentDate}</p>
-                            <p className="time-display">{currentTime}</p>
                         </div>
                     </div>
 
@@ -118,7 +124,7 @@ const Tasks = () => {
                                     placeholder="Add a new task..."
                                     className="task-input"
                                 />
-                                <button onClick={addTask} className="add-task-btn">
+                                <button onClick={() => addTask(newTask)} className="add-task-btn">
                                     Add Task
                                 </button>
                             </div>
@@ -130,12 +136,12 @@ const Tasks = () => {
                                     <span className="column-icon">⏳</span> In Progress
                                 </h3>
                                 <div className="task-list">
-                                    {tasks.filter(task => !task.completed).map(task => (
+                                    {task.filter(task => !task.completed).map(task => (
                                         <div key={task.id} className="task-item">
                                             <div className="task-checkbox" onClick={() => toggleTaskCompletion(task.id)}>
                                                 <div className="checkbox-inner"></div>
                                             </div>
-                                            <span className="task-text">{task.text}</span>
+                                            <span className="task-text">{task.body}</span>
                                             <button className="delete-task-btn" onClick={() => deleteTask(task.id)}>
                                                 ×
                                             </button>
@@ -149,12 +155,12 @@ const Tasks = () => {
                                     <span className="column-icon">✅</span> Completed
                                 </h3>
                                 <div className="task-list">
-                                    {tasks.filter(task => task.completed).map(task => (
+                                    {task.filter(task => task.completed).map(task => (
                                         <div key={task.id} className="task-item completed">
                                             <div className="task-checkbox checked" onClick={() => toggleTaskCompletion(task.id)}>
                                                 <div className="checkbox-inner">✓</div>
                                             </div>
-                                            <span className="task-text">{task.text}</span>
+                                            <span className="task-text">{task.body}</span>
                                             <button className="delete-task-btn" onClick={() => deleteTask(task.id)}>
                                                 ×
                                             </button>

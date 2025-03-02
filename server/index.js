@@ -148,7 +148,6 @@ server.post("/api/tasks", async (req, res) => {
 
 server.get("/api/tasks", async (req, res) => {
   try {
-    console.log("Fetching tasks for user:", req.query);
     const { user_id } = req.query;
 
     if (!user_id) {

@@ -2,7 +2,7 @@ import "./App.css";
 import SignIn from "./components/auth/SignIn";
 import SignUp from "./components/auth/SignUp";
 import HomePage from "./views/Home/homepage.jsx";
-import Productivity from "./components/Productivity.jsx";
+import Productivity from "./views/Productivity/Productivity.jsx";
 import { Routes, Route, Navigate } from "react-router";
 
 export default function App() {

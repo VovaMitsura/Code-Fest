@@ -4,6 +4,7 @@ import SignUp from "./components/auth/SignUp";
 import HomePage from "./views/Home/homepage";
 import Tasks from "./views/Tasks/Tasks";
 import Settings from "./views/Settings/Settings";
+import Dashboard from "./views/Dashboard/Dashboard";
 import { Routes, Route, Navigate } from "react-router";
 
 export default function App() {

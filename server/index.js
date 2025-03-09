@@ -119,6 +119,59 @@ server.post("/api/auth/signout", async (req, res) => {
   }
 });
 
+server.post("/api/tasks", async (req, res) => {
+  try {
+    const {id, email, body, is_reminder, remind_date } = req.body;
+
+    if (!email || !body) {
+      return res.status(400).json({ error: "Email and task body are required" });
+    }
+
+    const user_id = id;
+
+    // Insert task into the database
+    const { data, error } = await supabase
+        .from("tasks")
+        .insert([{ user_id, body, is_reminder, remind_date }])
+        .select();
+
+    if (error) {
+      throw error;
+    }
+
+    res.status(201).json({ message: "Task added successfully", task: data[0] });
+  } catch (error) {
+    console.error("Error adding task:", error);
+    res.status(500).json({ error: "Failed to add task", details: error.message });
+  }
+});
+
+server.get("/api/tasks", async (req, res) => {
+  try {
+    console.log("Fetching tasks for user:", req.query);
+    const { user_id } = req.query;
+
+    if (!user_id) {
+      return res.status(400).json({ error: "user_id is required" });
+    }
+
+    // Fetch all tasks for the user
+    const { data: tasks, error } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", user_id);
+
+    if (error) {
+      throw error;
+    }
+
+    res.status(200).json({ tasks });
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    res.status(500).json({ error: "Failed to fetch tasks", details: error.message });
+  }
+});
+
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

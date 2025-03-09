@@ -5,6 +5,7 @@ import HomePage from "./views/Home/homepage";
 import Tasks from "./views/Tasks/Tasks";
 import Settings from "./views/Settings/Settings";
 import Dashboard from "./views/Dashboard/Dashboard";
+import Health from "./views/Health/Health";
 import { Routes, Route, Navigate } from "react-router";
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
         <Route path="/tasks" element={<Tasks />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/health" element={<Health />} />
       </Routes>
     </>
   );

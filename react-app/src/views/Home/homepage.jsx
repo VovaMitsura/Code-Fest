@@ -64,22 +64,12 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="hero-image-container">
             <div className="dashboard-images">
               <img
                 src={mainsoftware}
                 alt="Dashboard Preview"
                 className="left-image"
               />
-              <img
-                src={longersoftware}
-                alt="Analytics Dashboard"
-                className="right-image"
-              />
-            </div>
-            <div className="floating-ui-element ui-element-1"></div>
-            <div className="floating-ui-element ui-element-2"></div>
-            <div className="floating-ui-element ui-element-3"></div>
           </div>
         </section>
       </div>

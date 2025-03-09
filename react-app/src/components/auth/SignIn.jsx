@@ -23,7 +23,7 @@ function SignIn() {
       setError("");
       setLoading(true);
       await signin(email, password);
-      navigate("/homepage");
+      navigate("/dashboard");
     } catch (err) {
       setError("Failed to sign in: " + err.message);
     } finally {

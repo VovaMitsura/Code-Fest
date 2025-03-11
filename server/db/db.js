@@ -1,9 +1,8 @@
-const { createClient } = require("@supabase/supabase-js");
-const dotenv = require("dotenv");
-const path = require("path");
-dotenv.config({ path: path.resolve(__dirname, "../.env") });
+import dotenv from "dotenv";
+import supabase from "../config/supabase.js";
 
-// Initialize Supabase client
+
+dotenv.config();
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
 
@@ -12,8 +11,6 @@ if (!supabaseUrl || !supabaseKey) {
   console.error("Missing Supabase credentials in environment variables");
   process.exit(1);
 }
-
-const supabase = createClient(supabaseUrl, supabaseKey);
 
 // User-specific data operations
 const userOperations = {
@@ -203,7 +200,4 @@ const userOperations = {
   },
 };
 
-module.exports = {
-  supabase,
-  userOperations,
-};
+export default userOperations ;

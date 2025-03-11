@@ -1,11 +1,10 @@
-const express = require("express");
-const cors = require("cors");
-const dotenv = require("dotenv");
-const { userOperations } = require("./db/db");
-const cron = require("node-cron"); // Import node-cron
-const supabase = require("./config/supabase");
+import cron from "node-cron";
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import supabase from "./config/supabase.js";
+import userOperations from "./db/db.js";
 
-// Load environment variables
 dotenv.config();
 
 const BLEND_AI_API_URL = "https://api.bland.ai/v1/calls";
@@ -21,16 +20,6 @@ const PORT = process.env.PORT || 5000;
 server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
-
-// Basic route
-server.get("/", (req, res) => {
-  res.json({ message: "Hello World" });
-});
-
-// Health check endpoint
-server.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "ok" });
-});
 
 // Auth endpoints
 server.post("/api/auth/signup", async (req, res) => {

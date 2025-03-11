@@ -1,22 +1,17 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
-const { createClient } = require("@supabase/supabase-js");
 const { userOperations } = require("./db/db");
 const cron = require("node-cron"); // Import node-cron
+const supabase = require("./config/supabase");
 
 // Load environment variables
 dotenv.config();
 
-// Initialize Supabase client
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
-const BLEND_AI_API_URL = 'https://api.bland.ai/v1/calls';
-const BLEND_AI_API_KEY = '';
-const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
-const OPEN_AI_API_KEY = '';
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const BLEND_AI_API_URL = "https://api.bland.ai/v1/calls";
+const BLEND_AI_API_KEY = "";
+const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
+const OPEN_AI_API_KEY = "";
 
 // Initialize express server
 const server = express();
@@ -127,19 +122,21 @@ server.post("/api/auth/signout", async (req, res) => {
 
 server.post("/api/tasks", async (req, res) => {
   try {
-    const {id, email, body, is_reminder, remind_date } = req.body;
+    const { id, email, body, is_reminder, remind_date } = req.body;
 
     if (!email || !body) {
-      return res.status(400).json({ error: "Email and task body are required" });
+      return res
+        .status(400)
+        .json({ error: "Email and task body are required" });
     }
 
     const user_id = id;
 
     // Insert task into the database
     const { data, error } = await supabase
-        .from("tasks")
-        .insert([{ user_id, body, is_reminder, remind_date }])
-        .select();
+      .from("tasks")
+      .insert([{ user_id, body, is_reminder, remind_date }])
+      .select();
 
     if (error) {
       throw error;
@@ -148,11 +145,11 @@ server.post("/api/tasks", async (req, res) => {
     res.status(201).json({ message: "Task added successfully", task: data[0] });
   } catch (error) {
     console.error("Error adding task:", error);
-    res.status(500).json({ error: "Failed to add task", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to add task", details: error.message });
   }
 });
-
-
 
 server.get("/api/tasks", async (req, res) => {
   try {
@@ -164,9 +161,9 @@ server.get("/api/tasks", async (req, res) => {
 
     // Fetch all tasks for the user
     const { data: tasks, error } = await supabase
-        .from("tasks")
-        .select("*")
-        .eq("user_id", user_id);
+      .from("tasks")
+      .select("*")
+      .eq("user_id", user_id);
 
     if (error) {
       throw error;
@@ -175,7 +172,9 @@ server.get("/api/tasks", async (req, res) => {
     res.status(200).json({ tasks });
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    res.status(500).json({ error: "Failed to fetch tasks", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch tasks", details: error.message });
   }
 });
 
@@ -183,8 +182,8 @@ server.get("/api/users", async (req, res) => {
   try {
     // Fetch all users from the users table
     const { data: users, error } = await supabase
-        .from("users") // Replace "users" with your actual user table name
-        .select("*");
+      .from("users") // Replace "users" with your actual user table name
+      .select("*");
 
     if (error) {
       throw error;
@@ -193,30 +192,28 @@ server.get("/api/users", async (req, res) => {
     res.status(200).json({ users });
   } catch (error) {
     console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Failed to fetch users", details: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to fetch users", details: error.message });
   }
 });
 
 // Schedule the task to run every minute
-cron.schedule('* * * * *', async () => {
-  console.log('Running scheduler task every minute');
+cron.schedule("* * * * *", async () => {
+  console.log("Running scheduler task every minute");
 
   try {
     const blendResponse = await fetch(BLEND_AI_API_URL, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${BLEND_AI_API_KEY}`, // Add authorization if needed
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${BLEND_AI_API_KEY}`, // Add authorization if needed
       },
-
     });
 
     if (!blendResponse.ok) {
-      console.error(
-          `BlendAI API request failed: ${blendResponse.statusText}`
-      );
-
-    }else {
+      console.error(`BlendAI API request failed: ${blendResponse.statusText}`);
+    } else {
       const blendData = await blendResponse.json();
       const calls = blendData.calls || []; // Assuming calls is an array in the response
       for (const call of calls) {
@@ -234,9 +231,9 @@ cron.schedule('* * * * *', async () => {
 
         // Check if phone number exists in profiles table
         const { data: profileData, error: profileError } = await supabase
-            .from("profiles")
-            .select("user_id")
-            .eq("phone_number", phoneNumber);
+          .from("profiles")
+          .select("user_id")
+          .eq("phone_number", phoneNumber);
 
         if (profileError) {
           console.error("Error checking profile:", profileError);
@@ -244,7 +241,9 @@ cron.schedule('* * * * *', async () => {
         }
 
         if (!profileData || profileData.length === 0) {
-          console.log(`Phone number ${phoneNumber} not found in profiles. Skipping.`);
+          console.log(
+            `Phone number ${phoneNumber} not found in profiles. Skipping.`
+          );
           continue; // Skip processing if phone number not found
         }
 
@@ -269,7 +268,7 @@ cron.schedule('* * * * *', async () => {
 
         if (!openaiResponse.ok) {
           console.error(
-              `OpenAI API request failed: ${openaiResponse.statusText}`
+            `OpenAI API request failed: ${openaiResponse.statusText}`
           );
           const openaiResponseBody = await openaiResponse.text();
           console.error("OpenAI API response body:", openaiResponseBody);
@@ -295,7 +294,8 @@ cron.schedule('* * * * *', async () => {
           const user_id = profileData[0].user_id;
 
           // Check if task already exists
-          const { data: existingTasks, error: existingTasksError } = await supabase
+          const { data: existingTasks, error: existingTasksError } =
+            await supabase
               .from("tasks")
               .select("*")
               .eq("user_id", user_id)
@@ -315,8 +315,8 @@ cron.schedule('* * * * *', async () => {
 
           // Insert task into Supabase
           const { error: supabaseError } = await supabase
-              .from("tasks")
-              .insert([{ user_id, body, is_reminder, remind_date }]);
+            .from("tasks")
+            .insert([{ user_id, body, is_reminder, remind_date }]);
 
           if (supabaseError) {
             console.error("Supabase insert error:", supabaseError);
@@ -329,12 +329,9 @@ cron.schedule('* * * * *', async () => {
         }
       }
     }
-
-
   } catch (error) {
     console.error(`Error sending scheduler request for user:`, error);
   }
-
 });
 
 server.listen(PORT, () => {
@@ -359,4 +356,3 @@ supabase.auth.onAuthStateChange(async (event, session) => {
     }
   }
 });
-

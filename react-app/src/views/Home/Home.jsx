@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
-import "./homepage.css";
+import "./Home.css";
 import mainsoftware from "../../public/images/Mainsoftware.png";
-import longersoftware from "../../public/images/longersoftware.png";
-export default function HomePage() {
+export default function Home() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {

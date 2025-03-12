@@ -19,8 +19,9 @@ function SignIn() {
     try {
       setError("");
       setLoading(true);
-      await signin(email, password);
-      navigate(AppPage.DASHBOARD);
+      const data = await signin(email, password);
+      if (data) navigate(AppPage.DASHBOARD);
+      else setError("Invalid email or password");
     } catch (err) {
       setError("Failed to sign in: " + err.message);
     } finally {

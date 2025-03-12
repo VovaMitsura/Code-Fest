@@ -2,8 +2,7 @@ import cron from "node-cron";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import supabase from "./config/supabase.js";
-import userOperations from "./db/db.js";
+import supabase from "./providers/supabase.js";
 
 dotenv.config();
 
@@ -21,111 +20,18 @@ server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
-// Auth endpoints
-server.post("/api/auth/signup", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
-    }
-
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-    });
-
-    if (authError) {
-      console.error("Auth error during signup:", authError);
-      return res.status(500).json({
-        error: authError.message,
-        details: "Failed to create user account",
-      });
-    }
-
-    if (authData.user) {
-      try {
-        const profileData = await userOperations.createUserProfileOnSignup(
-          authData.user
-        );
-        return res.status(200).json({
-          user: authData.user,
-          profile: profileData,
-          message: "User created successfully with profile",
-        });
-      } catch (profileError) {
-        console.error("Error creating user profile:", profileError);
-        return res.status(200).json({
-          user: authData.user,
-          warning: "User created but profile creation failed",
-          error: profileError.message,
-        });
-      }
-    }
-
-    return res.status(200).json({
-      user: authData.user,
-      message: "User created successfully",
-    });
-  } catch (error) {
-    console.error("Unexpected error in signup:", error);
-    res.status(500).json({
-      error: "An unexpected error occurred",
-      details: error.message,
-    });
-  }
-});
-
-server.post("/api/auth/signin", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password are required" });
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) throw error;
-
-    return res.status(200).json(data);
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
-server.post("/api/auth/signout", async (req, res) => {
-  try {
-    const { error } = await supabase.auth.signOut();
-
-    if (error) throw error;
-
-    return res.status(200).json({ message: "Signed out successfully" });
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-});
-
 server.post("/api/tasks", async (req, res) => {
   try {
     const { id, email, body, is_reminder, remind_date } = req.body;
 
     if (!email || !body) {
-      return res
-        .status(400)
-        .json({ error: "Email and task body are required" });
+      return res.status(400).json({ error: "Email and task body are required" });
     }
 
     const user_id = id;
 
     // Insert task into the database
-    const { data, error } = await supabase
-      .from("tasks")
-      .insert([{ user_id, body, is_reminder, remind_date }])
-      .select();
+    const { data, error } = await supabase.from("tasks").insert([{ user_id, body, is_reminder, remind_date }]).select();
 
     if (error) {
       throw error;
@@ -134,9 +40,7 @@ server.post("/api/tasks", async (req, res) => {
     res.status(201).json({ message: "Task added successfully", task: data[0] });
   } catch (error) {
     console.error("Error adding task:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to add task", details: error.message });
+    res.status(500).json({ error: "Failed to add task", details: error.message });
   }
 });
 
@@ -149,10 +53,7 @@ server.get("/api/tasks", async (req, res) => {
     }
 
     // Fetch all tasks for the user
-    const { data: tasks, error } = await supabase
-      .from("tasks")
-      .select("*")
-      .eq("user_id", user_id);
+    const { data: tasks, error } = await supabase.from("tasks").select("*").eq("user_id", user_id);
 
     if (error) {
       throw error;
@@ -161,9 +62,7 @@ server.get("/api/tasks", async (req, res) => {
     res.status(200).json({ tasks });
   } catch (error) {
     console.error("Error fetching tasks:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to fetch tasks", details: error.message });
+    res.status(500).json({ error: "Failed to fetch tasks", details: error.message });
   }
 });
 
@@ -181,9 +80,7 @@ server.get("/api/users", async (req, res) => {
     res.status(200).json({ users });
   } catch (error) {
     console.error("Error fetching users:", error);
-    res
-      .status(500)
-      .json({ error: "Failed to fetch users", details: error.message });
+    res.status(500).json({ error: "Failed to fetch users", details: error.message });
   }
 });
 
@@ -230,9 +127,7 @@ cron.schedule("* * * * *", async () => {
         }
 
         if (!profileData || profileData.length === 0) {
-          console.log(
-            `Phone number ${phoneNumber} not found in profiles. Skipping.`
-          );
+          console.log(`Phone number ${phoneNumber} not found in profiles. Skipping.`);
           continue; // Skip processing if phone number not found
         }
 
@@ -256,9 +151,7 @@ cron.schedule("* * * * *", async () => {
         });
 
         if (!openaiResponse.ok) {
-          console.error(
-            `OpenAI API request failed: ${openaiResponse.statusText}`
-          );
+          console.error(`OpenAI API request failed: ${openaiResponse.statusText}`);
           const openaiResponseBody = await openaiResponse.text();
           console.error("OpenAI API response body:", openaiResponseBody);
           continue; // Continue to the next call
@@ -283,12 +176,11 @@ cron.schedule("* * * * *", async () => {
           const user_id = profileData[0].user_id;
 
           // Check if task already exists
-          const { data: existingTasks, error: existingTasksError } =
-            await supabase
-              .from("tasks")
-              .select("*")
-              .eq("user_id", user_id)
-              .eq("body", body);
+          const { data: existingTasks, error: existingTasksError } = await supabase
+            .from("tasks")
+            .select("*")
+            .eq("user_id", user_id)
+            .eq("body", body);
 
           if (existingTasksError) {
             console.error("Error checking existing tasks:", existingTasksError);
@@ -325,23 +217,4 @@ cron.schedule("* * * * *", async () => {
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-});
-
-supabase.auth.onAuthStateChange(async (event, session) => {
-  if (event === "SIGNED_IN" && session?.user) {
-    try {
-      const { data: existingProfile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("user_id", session.user.id)
-        .single();
-
-      if (!existingProfile) {
-        console.log("Creating profile for new sign-in:", session.user.id);
-        await userOperations.createUserProfileOnSignup(session.user);
-      }
-    } catch (error) {
-      console.error("Error in auth state change handler:", error);
-    }
-  }
 });

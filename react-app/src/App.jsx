@@ -1,6 +1,6 @@
 import "./App.css";
-import SignIn from "./components/auth/SignIn";
-import SignUp from "./components/auth/SignUp";
+import SignIn from "./views/Auth/SignIn";
+import SignUp from "./views/Auth/SignUp";
 import Home from "./views/Home/Home";
 import Tasks from "./views/Tasks/Tasks";
 import Settings from "./views/Settings/Settings";

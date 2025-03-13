@@ -66,24 +66,6 @@ server.get("/api/tasks", async (req, res) => {
   }
 });
 
-server.get("/api/users", async (req, res) => {
-  try {
-    // Fetch all users from the users table
-    const { data: users, error } = await supabase
-      .from("users") // Replace "users" with your actual user table name
-      .select("*");
-
-    if (error) {
-      throw error;
-    }
-
-    res.status(200).json({ users });
-  } catch (error) {
-    console.error("Error fetching users:", error);
-    res.status(500).json({ error: "Failed to fetch users", details: error.message });
-  }
-});
-
 // Schedule the task to run every minute
 cron.schedule("* * * * *", async () => {
   console.log("Running scheduler task every minute");

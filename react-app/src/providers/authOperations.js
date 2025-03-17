@@ -8,7 +8,6 @@ const supabaseKey = import.meta.env.SUPABASE_SERVICE_KEY;
 if (!supabaseUrl || !supabaseKey) {
   console.log(supabaseUrl, supabaseKey);
   console.error("Missing Supabase credentials in environment variables");
-  process.exit(1);
 }
 
 // User-specific data operations

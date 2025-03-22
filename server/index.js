@@ -2,7 +2,7 @@ import cron from "node-cron";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import supabase from "./providers/supabase.js";
+import { supabase, authMiddleware } from "./providers/supabase.js";
 
 dotenv.config();
 
@@ -20,15 +20,15 @@ server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
-server.post("/api/tasks", async (req, res) => {
+server.post("/api/tasks", authMiddleware, async (req, res) => {
   try {
-    const { id, email, body, is_reminder, remind_date } = req.body;
+    const { body, is_reminder, remind_date } = req.body;
 
     if (!email || !body) {
       return res.status(400).json({ error: "Email and task body are required" });
     }
 
-    const user_id = id;
+    const user_id = req.user.id;
 
     // Insert task into the database
     const { data, error } = await supabase.from("tasks").insert([{ user_id, body, is_reminder, remind_date }]).select();
@@ -44,10 +44,9 @@ server.post("/api/tasks", async (req, res) => {
   }
 });
 
-server.get("/api/tasks", async (req, res) => {
+server.get("/api/tasks", authMiddleware, async (req, res) => {
   try {
-    const { user_id } = req.query;
-
+    const user_id = req.user.id;
     if (!user_id) {
       return res.status(400).json({ error: "user_id is required" });
     }

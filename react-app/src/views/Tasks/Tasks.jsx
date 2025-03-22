@@ -1,24 +1,29 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import Sidebar from "../../components/Sidebar/Sidebar";
-import { useAuth } from "../../contexts/AuthContext.jsx";
 import "./Tasks.css";
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+import { useAuth } from "../../contexts/AuthContext.jsx";
 
 const Tasks = () => {
-  const { user } = useAuth();
+  const { user, getAccessToken } = useAuth();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [task, setTask] = useState([]);
   const [newTask, setNewTask] = useState("");
   const navigate = useNavigate();
+
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     if (!user?.email) return; // Ensure email exists
 
     const fetchTasks = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/tasks?user_id=${user.id}`);
+        const token = await getAccessToken();
+        const response = await fetch(`${API_URL}/api/tasks`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await response.json();
 
         if (!response.ok) {
@@ -51,6 +56,7 @@ const Tasks = () => {
   };
 
   const addTask = async taskText => {
+    const token = await getAccessToken();
     if (!taskText.trim() || !user?.email) return; // Ensure email exists
 
     try {
@@ -59,10 +65,9 @@ const Tasks = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          id: user.id,
-          email: user.email, // Send user email
           body: taskText,
           is_reminder: false,
           remind_date: null,

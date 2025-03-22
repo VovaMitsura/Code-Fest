@@ -50,6 +50,17 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const getAccessToken = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      return session.access_token;
+    } else {
+      throw new Error("No active session found");
+    }
+  };
+
   useEffect(() => {
     const {
       data: { subscription },
@@ -85,6 +96,7 @@ export function AuthProvider({ children }) {
     signup,
     signin,
     signout,
+    getAccessToken,
   };
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }

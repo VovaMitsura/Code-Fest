@@ -81,7 +81,7 @@ function SignUp() {
     if (validateForm()) {
       try {
         setLoading(true);
-        await signup(formData.email, formData.password);
+        await signup(formData.email, formData.password, formData.phoneNumber);
         setTimeout(() => navigate(AppPage.SIGNIN), 500);
       } catch (err) {
         console.error("Failed to create an account: " + err.message);

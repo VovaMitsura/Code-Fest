@@ -11,12 +11,29 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const signup = async (email, password) => {
+  const signup = async (email, password, phoneNumber) => {
     try {
-      await supabase.auth.signUp({
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
       });
+      if (authError) throw authError;
+
+      if (authData?.user) {
+        const { error: profileError } = await supabase.from("profiles").insert([
+          {
+            user_id: authData.user.id,
+            email: email,
+            phone_number: phoneNumber,
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        ]);
+        if (profileError) {
+          console.error("Error creating profile: ", profileError);
+          throw profileError;
+        }
+      }
     } catch (error) {
       console.error("Signup error:", error);
       throw error;

@@ -17,7 +17,16 @@ export function AuthProvider({ children }) {
         email,
         password,
       });
-      if (authError) throw authError;
+      if (authError) {
+        const token = await getAccessToken();
+        await fetch("http://localhost:5000/api/auth/delete-user", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+      }
 
       if (authData?.user) {
         const { error: profileError } = await supabase.from("profiles").insert([

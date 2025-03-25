@@ -20,6 +20,39 @@ server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
 
+server.delete("/api/auth/delete-user", authMiddleware, async (req, res) => {
+  try {
+    const user_id = req.user.id;
+
+    if (!user_id) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Delete user profile from the database
+    const { error: profileError } = await supabase.from("profiles").delete().eq("user_id", user_id);
+    if (profileError) {
+      throw profileError;
+    }
+
+    // Delete user tasks from the database
+    const { error: tasksError } = await supabase.from("tasks").delete().eq("user_id", user_id);
+    if (tasksError) {
+      throw tasksError;
+    }
+
+    // Delete user authentication
+    const { error: authError } = await supabase.auth.admin.deleteUser(user_id);
+    if (authError) {
+      throw authError;
+    }
+
+    res.status(200).json({ message: "User and associated data deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting user:", err);
+    res.status(400).json({ error: "Failed to delete user", details: err.message });
+  }
+});
+
 server.post("/api/tasks", authMiddleware, async (req, res) => {
   try {
     const { body, is_reminder, remind_date } = req.body;

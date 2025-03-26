@@ -1,21 +1,14 @@
 import cron from "node-cron";
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
 import { supabase, authMiddleware } from "./providers/supabase.js";
+import * as config from "./config.js";
 
 dotenv.config();
 
-const BLEND_AI_API_URL = "https://api.bland.ai/v1/calls";
-const BLEND_AI_API_KEY = "";
-const OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
-const OPEN_AI_API_KEY = "";
-
-// Initialize express server
 const server = express();
-const PORT = process.env.PORT || 5000;
+const PORT = config.PORT;
 
-// Middleware
 server.use(cors());
 server.use(express.json());
 server.use(express.urlencoded({ extended: true }));
@@ -103,11 +96,11 @@ cron.schedule("* * * * *", async () => {
   console.log("Running scheduler task every minute");
 
   try {
-    const blendResponse = await fetch(BLEND_AI_API_URL, {
+    const blendResponse = await fetch(config.BLEND_AI_API_URL, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${BLEND_AI_API_KEY}`, // Add authorization if needed
+        Authorization: `Bearer ${config.BLEND_AI_API_KEY}`, // Add authorization if needed
       },
     });
 
@@ -147,11 +140,11 @@ cron.schedule("* * * * *", async () => {
 
         console.log(`Processing call summary: ${call.summary}`);
 
-        const openaiResponse = await fetch(OPENAI_API_URL, {
+        const openaiResponse = await fetch(config.OPENAI_API_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${OPEN_AI_API_KEY}`,
+            Authorization: `Bearer ${config.OPEN_AI_API_KEY}`,
           },
           body: JSON.stringify({
             model: "gpt-3.5-turbo", // Or any suitable model

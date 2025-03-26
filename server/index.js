@@ -91,16 +91,13 @@ server.get("/api/tasks", authMiddleware, async (req, res) => {
   }
 });
 
-// Schedule the task to run every minute
 cron.schedule("* * * * *", async () => {
-  console.log("Running scheduler task every minute");
-
   try {
     const blendResponse = await fetch(config.BLEND_AI_API_URL, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${config.BLEND_AI_API_KEY}`, // Add authorization if needed
+        Authorization: `Bearer ${config.BLEND_AI_API_KEY}`,
       },
     });
 
@@ -108,15 +105,14 @@ cron.schedule("* * * * *", async () => {
       console.error(`BlendAI API request failed: ${blendResponse.statusText}`);
     } else {
       const blendData = await blendResponse.json();
-      const calls = blendData.calls || []; // Assuming calls is an array in the response
+      const calls = blendData.calls || [];
       for (const call of calls) {
         if (!call.summary) {
           console.warn(`Call ${call.id} has no summary. Skipping.`);
           continue;
         }
 
-        // Check if phone number is in profiles table
-        const phoneNumber = call.from; // Assuming 'from' field has phone number
+        const phoneNumber = call.from;
         if (!phoneNumber) {
           console.warn(`Call ${call.id} has no phone number. Skipping.`);
           continue;
@@ -135,7 +131,7 @@ cron.schedule("* * * * *", async () => {
 
         if (!profileData || profileData.length === 0) {
           console.log(`Phone number ${phoneNumber} not found in profiles. Skipping.`);
-          continue; // Skip processing if phone number not found
+          continue;
         }
 
         console.log(`Processing call summary: ${call.summary}`);
@@ -147,7 +143,7 @@ cron.schedule("* * * * *", async () => {
             Authorization: `Bearer ${config.OPEN_AI_API_KEY}`,
           },
           body: JSON.stringify({
-            model: "gpt-3.5-turbo", // Or any suitable model
+            model: "gpt-3.5-turbo",
             messages: [
               {
                 role: "user",
@@ -161,7 +157,7 @@ cron.schedule("* * * * *", async () => {
           console.error(`OpenAI API request failed: ${openaiResponse.statusText}`);
           const openaiResponseBody = await openaiResponse.text();
           console.error("OpenAI API response body:", openaiResponseBody);
-          continue; // Continue to the next call
+          continue;
         }
 
         const openaiData = await openaiResponse.json();
@@ -169,19 +165,16 @@ cron.schedule("* * * * *", async () => {
 
         try {
           const taskData = JSON.parse(chatgptResponse);
-          // Assuming taskData has user_id, body, is_reminder, remind_date
           const { body, is_reminder, remind_date } = taskData;
 
-          // Assuming 'call.from' contains the phone number
           const phoneNumber = call.from;
 
           if (!phoneNumber) {
             console.warn("Call has no phone number to identify user.");
-            return; // Stop processing this call
+            return;
           }
 
           const user_id = profileData[0].user_id;
-
           // Check if task already exists
           const { data: existingTasks, error: existingTasksError } = await supabase
             .from("tasks")
@@ -196,12 +189,12 @@ cron.schedule("* * * * *", async () => {
 
           if (existingTasks && existingTasks.length > 0) {
             console.log("Task already exists. Skipping insertion.");
-            continue; // Skip insertion if task exists
+            continue;
           }
 
           console.log("Parsed task data:", taskData);
 
-          // Insert task into Supabase
+          // Insert task into tasks table
           const { error: supabaseError } = await supabase
             .from("tasks")
             .insert([{ user_id, body, is_reminder, remind_date }]);

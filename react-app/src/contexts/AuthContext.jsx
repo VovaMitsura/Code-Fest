@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import supabase from "../providers/supabase";
 
 const AuthContext = createContext();
 
@@ -10,44 +11,38 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-  useEffect(() => {
-    // Check if there's a user session on load
-    const checkUser = async () => {
-      try {
-        // Get stored session from localStorage
-        const session = localStorage.getItem("session");
-        if (session) {
-          setUser(JSON.parse(session));
-        }
-      } catch (error) {
-        console.error("Error checking user session:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkUser();
-  }, []);
-
-  const signup = async (email, password) => {
+  const signup = async (email, password, phoneNumber) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to sign up");
+      if (authError) {
+        const token = await getAccessToken();
+        await fetch("http://localhost:5000/api/auth/delete-user", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
       }
 
-      setUser(data.user);
-      localStorage.setItem("session", JSON.stringify(data.user));
-      return data;
+      if (authData?.user) {
+        const { error: profileError } = await supabase.from("profiles").insert([
+          {
+            user_id: authData.user.id,
+            email: email,
+            phone_number: phoneNumber,
+            created_at: new Date(),
+            updated_at: new Date(),
+          },
+        ]);
+        if (profileError) {
+          console.error("Error creating profile: ", profileError);
+          throw profileError;
+        }
+      }
     } catch (error) {
       console.error("Signup error:", error);
       throw error;
@@ -56,20 +51,14 @@ export function AuthProvider({ children }) {
 
   const signin = async (email, password) => {
     try {
-      const response = await fetch(`${API_URL}/api/auth/signin`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to sign in");
+      if (error) {
+        throw error;
       }
-
       setUser(data.user);
-      localStorage.setItem("session", JSON.stringify(data.user));
       return data;
     } catch (error) {
       console.error("Signin error:", error);
@@ -79,18 +68,53 @@ export function AuthProvider({ children }) {
 
   const signout = async () => {
     try {
-      await fetch(`${API_URL}/api/auth/signout`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-      });
-
+      await supabase.auth.signOut({});
       setUser(null);
-      localStorage.removeItem("session");
     } catch (error) {
       console.error("Signout error:", error);
       throw error;
     }
   };
+
+  const getAccessToken = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      return session.access_token;
+    } else {
+      throw new Error("No active session found");
+    }
+  };
+
+  useEffect(() => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user || null);
+      setLoading(false);
+    });
+
+    // Check for existing session on load
+    const checkSession = async () => {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        setUser(session?.user || null);
+      } catch (error) {
+        console.error("Error checking session:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkSession();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const value = {
     user,
@@ -98,11 +122,7 @@ export function AuthProvider({ children }) {
     signup,
     signin,
     signout,
+    getAccessToken,
   };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {!loading && children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
 }

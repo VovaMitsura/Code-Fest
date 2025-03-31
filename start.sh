@@ -13,11 +13,11 @@ trap cleanup SIGINT SIGTERM
 # Start backend
 cd server
 npm install
-npm run dev &
+npm run dev --reset-cache &
 
 cd ../react-app
 npm install
-npm run dev &
+npm run dev --reset-cache &
 
 echo "Services started. Press Ctrl+C to stop all processes."
 wait

@@ -1,6 +1,7 @@
 import cron from "node-cron";
 import cors from "cors";
 import express from "express";
+import Groq from "groq-sdk";
 import { supabase, authMiddleware } from "./providers/supabase.js";
 import * as config from "./config.js";
 
@@ -91,36 +92,33 @@ server.get("/api/tasks", authMiddleware, async (req, res) => {
 
 server.post("/api/text-tasks", authMiddleware, async (req, res) => {
   try {
+    const groq = new Groq({ apiKey: config.GROQ_API_KEY });
     const { text } = req.body;
     const user_id = req.user.id;
+
     if (!text) {
       return res.status(400).json({ error: "Text is required" });
     }
-    const openaiResponse = await fetch(config.OPENAI_API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${config.OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "user",
-            content: `Provide a JSON object for the following text input, fitting the tasks table structure: ${text}. The table has the following structure: CREATE TABLE tasks (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), user_id UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE, body TEXT NOT NULL, is_reminder BOOLEAN NOT NULL DEFAULT FALSE, date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), remind_date TIMESTAMP WITH TIME ZONE DEFAULT NULL, created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()); only return the json object.`,
-          },
-        ],
-      }),
+
+    const chatCompletion = await groq.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: `Provide a JSON object for the following text input, fitting the tasks table structure: ${text}. The table has the following structure: CREATE TABLE tasks (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), user_id UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE, body TEXT NOT NULL, is_reminder BOOLEAN NOT NULL DEFAULT FALSE, date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), remind_date TIMESTAMP WITH TIME ZONE DEFAULT NULL, created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()); only return the json object`,
+        },
+      ],
+      model: "llama-3.3-70b-versatile",
     });
-    if (!openaiResponse.ok) {
-      const errorText = await openaiResponse.text();
-      throw new Error(`OpenAI API request failed: ${openaiResponse.statusText}, ${errorText}`);
+
+    if (!chatCompletion) {
+      throw new Error(`GROQ API request failed`);
     }
 
-    const openaiData = await openaiResponse.json();
-    const chatgptResponse = openaiData.choices[0].message.content;
+    // Process Groq response (not OpenAI)
+    const groqResponse = chatCompletion.choices[0].message.content;
+
     try {
-      const taskData = JSON.parse(chatgptResponse);
+      const taskData = groqResponse;
       const { body, is_reminder, remind_date } = taskData;
 
       // Check if task already exists
@@ -135,26 +133,33 @@ server.post("/api/text-tasks", authMiddleware, async (req, res) => {
       }
 
       if (existingTasks && existingTasks.length > 0) {
-        console.log("Task already exists. Skipping insertion.");
-        return res.status(409).json({ error: "Task already exists" });
+        return res.status(200).json({
+          message: "Task already exists",
+          task: existingTasks[0],
+        });
       }
 
       // Insert task into tasks table
-      const { error: supabaseError } = await supabase
+      const { data: insertedTask, error: supabaseError } = await supabase
         .from("tasks")
-        .insert([{ user_id, body, is_reminder, remind_date }]);
+        .insert([{ user_id, body, is_reminder, remind_date }])
+        .select();
 
       if (supabaseError) {
         throw supabaseError;
       }
 
-      res.status(201).json({ message: "Task added successfully" });
+      res.status(201).json({
+        message: "Task added successfully",
+        task: insertedTask[0],
+      });
     } catch (err) {
-      console.error("Error parsing ChatGPT response:", err);
-      console.error("ChatGPT response:", chatgptResponse);
+      console.error("Error parsing Groq response:", err);
+      console.error("Groq response:", groqResponse);
       res.status(400).json({ error: "Failed to parse task data", details: err.message });
     }
   } catch (err) {
+    console.error("Error with text task processing:", err);
     res.status(500).json({ error: "Text communication failed", details: err.message });
   }
 });

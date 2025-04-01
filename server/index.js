@@ -4,8 +4,6 @@ import express from "express";
 import { supabase, authMiddleware } from "./providers/supabase.js";
 import * as config from "./config.js";
 
-dotenv.config();
-
 const server = express();
 const PORT = config.PORT;
 
@@ -91,6 +89,77 @@ server.get("/api/tasks", authMiddleware, async (req, res) => {
   }
 });
 
+server.post("/api/text-tasks", authMiddleware, async (req, res) => {
+  try {
+    const { text } = req.body;
+    const user_id = req.user.id;
+    if (!text) {
+      return res.status(400).json({ error: "Text is required" });
+    }
+    const openaiResponse = await fetch(config.OPENAI_API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${config.OPEN_AI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: [
+          {
+            role: "user",
+            content: `Provide a JSON object for the following text input, fitting the tasks table structure: ${text}. The table has the following structure: CREATE TABLE tasks (id UUID PRIMARY KEY DEFAULT uuid_generate_v4(), user_id UUID NOT NULL REFERENCES profiles(user_id) ON DELETE CASCADE, body TEXT NOT NULL, is_reminder BOOLEAN NOT NULL DEFAULT FALSE, date TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), remind_date TIMESTAMP WITH TIME ZONE DEFAULT NULL, created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()); only return the json object.`,
+          },
+        ],
+      }),
+    });
+    if (!openaiResponse.ok) {
+      const errorText = await openaiResponse.text();
+      throw new Error(`OpenAI API request failed: ${openaiResponse.statusText}, ${errorText}`);
+    }
+
+    const openaiData = await openaiResponse.json();
+    const chatgptResponse = openaiData.choices[0].message.content;
+    try {
+      const taskData = JSON.parse(chatgptResponse);
+      const { body, is_reminder, remind_date } = taskData;
+
+      // Check if task already exists
+      const { data: existingTasks, error: existingTasksError } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("user_id", user_id)
+        .eq("body", body);
+
+      if (existingTasksError) {
+        throw existingTasksError;
+      }
+
+      if (existingTasks && existingTasks.length > 0) {
+        console.log("Task already exists. Skipping insertion.");
+        return res.status(409).json({ error: "Task already exists" });
+      }
+
+      // Insert task into tasks table
+      const { error: supabaseError } = await supabase
+        .from("tasks")
+        .insert([{ user_id, body, is_reminder, remind_date }]);
+
+      if (supabaseError) {
+        throw supabaseError;
+      }
+
+      res.status(201).json({ message: "Task added successfully" });
+    } catch (err) {
+      console.error("Error parsing ChatGPT response:", err);
+      console.error("ChatGPT response:", chatgptResponse);
+      res.status(400).json({ error: "Failed to parse task data", details: err.message });
+    }
+  } catch (err) {
+    res.status(500).json({ error: "Text communication failed", details: err.message });
+  }
+});
+
+/*
 cron.schedule("* * * * *", async () => {
   try {
     const blendResponse = await fetch(config.BLEND_AI_API_URL, {
@@ -214,6 +283,7 @@ cron.schedule("* * * * *", async () => {
     console.error(`Error sending scheduler request for user:`, error);
   }
 });
+*/
 
 server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

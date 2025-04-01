@@ -11,11 +11,13 @@ import { Routes, Route, Navigate } from "react-router";
 import { useAuth } from "./contexts/AuthContext";
 
 export default function App() {
-  const { user, loading } = useAuth();
+  const { user, loading, getAccessToken } = useAuth();
 
   const authCheck = component => {
     if (!user && !loading) {
       return <Navigate to={AppPage.SIGNIN} />;
+    } else if (user && !loading) {
+      getAccessToken();
     }
     return component;
   };

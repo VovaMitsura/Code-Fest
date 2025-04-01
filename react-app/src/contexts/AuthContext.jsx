@@ -81,6 +81,7 @@ export function AuthProvider({ children }) {
       data: { session },
     } = await supabase.auth.getSession();
     if (session) {
+      console.log("Access token:", session.access_token);
       return session.access_token;
     } else {
       throw new Error("No active session found");

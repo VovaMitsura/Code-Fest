@@ -6,18 +6,17 @@ import Tasks from "./views/Tasks/Tasks";
 import Settings from "./views/Settings/Settings";
 import Dashboard from "./views/Dashboard/Dashboard";
 import Health from "./views/Health/Health";
+import TokenTest from "./test";
 import AppPage from "./routes/routes";
 import { Routes, Route, Navigate } from "react-router";
 import { useAuth } from "./contexts/AuthContext";
 
 export default function App() {
-  const { user, loading, getAccessToken } = useAuth();
+  const { user, loading } = useAuth();
 
   const authCheck = component => {
     if (!user && !loading) {
       return <Navigate to={AppPage.SIGNIN} />;
-    } else if (user && !loading) {
-      getAccessToken();
     }
     return component;
   };
@@ -35,6 +34,7 @@ export default function App() {
         <Route path={AppPage.SETTINGS} element={authCheck(<Settings />)} />
         <Route path={AppPage.DASHBOARD} element={authCheck(<Dashboard />)} />
         <Route path={AppPage.HEALTH} element={authCheck(<Health />)} />
+        <Route path={AppPage.TEST} element={<TokenTest />} />
       </Routes>
     </>
   );

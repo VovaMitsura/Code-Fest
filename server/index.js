@@ -100,7 +100,7 @@ server.post("/api/text-tasks", authMiddleware, async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${config.OPEN_AI_API_KEY}`,
+        Authorization: `Bearer ${config.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
